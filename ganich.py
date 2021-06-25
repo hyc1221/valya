@@ -1,4 +1,5 @@
 import json
+from discord import player
 import requests
 import discord
 import glob
@@ -6,7 +7,7 @@ import os
 import random
 from discord.ext import commands
 from config import settings
-from text import phrases, send_debug, send_hello, send_join_error
+from text import *
 
 bot = commands.Bot(command_prefix = settings['prefix'])
 
@@ -57,6 +58,14 @@ async def leave(ctx):
 async def ping(ctx):
     send_debug(f'{ctx.author.name}, ping')
     await ctx.send(phrases['ping'], file=discord.File(r'd:/py/valya/img/ping.gif'))
+
+@bot.command()
+async def test(ctx):
+    if (ctx.voice_client):
+        send_debug("test")
+        voices = glob.glob('voice/*.ogg')
+        source = discord.FFmpegPCMAudio(random.choice(voices))
+        player = ctx.voice_client.play(source)
 
 
 bot.run(settings['token']) # Обращаемся к словарю settings с ключом token, для получения токена
