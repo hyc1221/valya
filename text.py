@@ -1,3 +1,5 @@
+import datetime
+
 phrases = {
     'on_ready': 'я не сплю',
     'cutie_debug': 'random ganich',
@@ -12,3 +14,6 @@ def send_hello(author):
 def send_join_error(author):
     return (f'Уважаемый {author}, сначала сам зайди, потом зови. (ты никто и звать тебя никта)')
 
+def send_debug(message):
+    timestamp = datetime.datetime.now()
+    print(f'{timestamp.strftime(r"(%d.%m.%Y) %H:%M:%S")} - {message}')
