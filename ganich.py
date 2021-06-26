@@ -9,7 +9,7 @@ from discord.ext import commands
 from config import settings
 from text import *
 
-bot = commands.Bot(command_prefix = settings['prefix'])
+bot = commands.Bot(command_prefix = [settings['prefix'], settings['prefix'].upper()], case_insensitive = False)
 
 @bot.event
 async def on_ready():
@@ -40,13 +40,21 @@ async def cutie(ctx):
 @bot.command()
 async def join(ctx):
     connected = ctx.author.voice
-    if connected:
-        send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
-        await connected.channel.connect()
-        await ctx.send(phrases['join_connect'])
+    if (not ctx.voice_client):
+        if connected:
+            send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
+            await connected.channel.connect()
+            await ctx.send(phrases['join_connect'])
+        else: 
+            send_debug(send_join_error(ctx.author.name))
+            await ctx.send(send_join_error(ctx.author.mention))
     else: 
-        send_debug(send_join_error(ctx.author.name))
-        await ctx.send(send_join_error(ctx.author.mention))
+        if (ctx.author.voice.channel.id != ctx.voice_client.channel.id):
+            send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
+            await ctx.guild.voice_client.disconnect()
+            await connected.channel.connect()
+            await ctx.send(phrases['join_another'])
+        
 
 @bot.command()
 async def leave(ctx):
@@ -61,11 +69,23 @@ async def ping(ctx):
 
 @bot.command()
 async def test(ctx):
-    if (ctx.voice_client):
+    connect = True
+    if (not ctx.voice_client):
+        connected = ctx.author.voice
+        if connected:
+            send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
+            await connected.channel.connect()
+            await ctx.send(phrases['join_connect'])
+        else: 
+            connect = False
+            send_debug(send_join_error(ctx.author.name))
+            await ctx.send(send_join_error(ctx.author.mention))
+    if (connect):        
         send_debug("test")
         voices = glob.glob('voice/*.ogg')
         source = discord.FFmpegPCMAudio(random.choice(voices))
         player = ctx.voice_client.play(source)
+        
 
 
 bot.run(settings['token']) # Обращаемся к словарю settings с ключом token, для получения токена
