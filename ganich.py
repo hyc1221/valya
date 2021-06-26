@@ -51,8 +51,7 @@ async def join(ctx):
     else: 
         if (ctx.author.voice.channel.id != ctx.voice_client.channel.id):
             send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
-            await ctx.guild.voice_client.disconnect()
-            await connected.channel.connect()
+            await ctx.guild.voice_client.move_to(connected.channel)
             await ctx.send(phrases['join_another'])
         
 
@@ -70,8 +69,8 @@ async def ping(ctx):
 @bot.command()
 async def test(ctx):
     connect = True
+    connected = ctx.author.voice
     if (not ctx.voice_client):
-        connected = ctx.author.voice
         if connected:
             send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
             await connected.channel.connect()
@@ -80,11 +79,21 @@ async def test(ctx):
             connect = False
             send_debug(send_join_error(ctx.author.name))
             await ctx.send(send_join_error(ctx.author.mention))
-    if (connect):        
-        send_debug("test")
-        voices = glob.glob('voice/*.ogg')
-        source = discord.FFmpegPCMAudio(random.choice(voices))
-        player = ctx.voice_client.play(source)
+    else:
+        if (ctx.author.voice.channel.id != ctx.voice_client.channel.id):
+            send_debug(f'{ctx.author.voice.channel.id}, {ctx.author.voice.channel.name}')
+            await ctx.voice_client.move_to(connected.channel)
+            await ctx.send(phrases['join_another'])
+    if (connect):
+        while (not ctx.voice_client.is_connected()):
+            b = 1
+        if (not ctx.voice_client.is_playing()):
+            send_debug("test")
+            voices = glob.glob('voice/*.ogg')
+            source = discord.FFmpegPCMAudio(random.choice(voices))
+            player = ctx.voice_client.play(source)
+        else:
+            await ctx.send(phrases['speak_int'])
         
 
 
