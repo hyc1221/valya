@@ -8,7 +8,7 @@ import random
 from discord.ext import commands
 from config import settings
 from text import *
-
+from dbhelp import *
 bot = commands.Bot(command_prefix = [settings['prefix'], settings['prefix'].upper()], case_insensitive = False)
 
 @bot.event
@@ -95,6 +95,47 @@ async def test(ctx):
         else:
             await ctx.send(phrases['speak_int'])
         
+@bot.command()
+async def create(ctx):
+    id = ctx.author.id
+    name = ctx.author.name
+    if (checkId(str(id))):
+        send_debug(phrases['user_exists'])
+        await ctx.send(phrases['user_exists'])
+    else:
+        newUser(str(id), name)
+        send_debug(send_create_ok(name))
+        await ctx.send(send_create_ok(name))
 
+@bot.command()
+async def gender(ctx, gender = None):
+    id = ctx.author.id
+    if (checkId(str(id))):
+        if (gender == None):
+            gender = checkGender(id)[0]
+            if (gender == 'ХЗ'):
+                await ctx.send(phrases['gender_not_entered'])
+            else:
+                await ctx.send(send_gender(gender))
+        else:
+            gender = gender.lower()
+            if (gender == 'мужчина'):
+                gender = 'male'
+            else:
+                if (gender == 'женщина'):
+                    gender = 'female'
+            if (gender == 'male' or gender == 'female'):
+                send_debug(f'{ctx.author.name} changed gender to {gender}')
+                if (gender == 'male' or gender == 'мужчина'):
+                    await ctx.send(phrases['gender_male'])
+                else:
+                    await ctx.send(phrases['gender_female'])
+                setGender(id, gender)
+            else:
+                send_debug(ctx.author.name + ' ' + phrases['gender_error'])
+                await ctx.send(phrases['gender_error'])
+    else:
+        send_debug(ctx.author.name + ' ' + phrases['user_unknown'])
+        await ctx.send(phrases['user_unknown'])
 
 bot.run(settings['token']) # Обращаемся к словарю settings с ключом token, для получения токена
