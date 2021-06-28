@@ -32,6 +32,16 @@ def send_gender(gender):
         gender = 'женщина'
     return (f'Если не ошибаюсь, ты {gender}')
 
+def send_info(result):
+    name = result[1]
+    balance = result[2]
+    gender = result[3]
+    if (gender == 'male'):
+        gender = 'Мужчина'
+    if (gender == 'female'):
+        gender = 'Женщина'
+    return(f"Имя: {name} \nБаланс: {balance} \nПол: {gender}") 
+
 def send_debug(message):
     timestamp = datetime.datetime.now()
     print(f'{timestamp.strftime(r"(%d.%m.%Y) %H:%M:%S")} - {message}')

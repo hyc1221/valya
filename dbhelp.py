@@ -48,3 +48,11 @@ def checkGender(id):
         result = cur.fetchone()
         cur.close()
         return result
+
+def checkinfo(id):
+    with con:
+        cur = con.cursor()
+        cur.execute("SELECT * FROM test WHERE userid=?", (id,))
+        result = cur.fetchone()
+        cur.close()
+        return result

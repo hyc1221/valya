@@ -138,4 +138,15 @@ async def gender(ctx, gender = None):
         send_debug(ctx.author.name + ' ' + phrases['user_unknown'])
         await ctx.send(phrases['user_unknown'])
 
+@bot.command()
+async def info(ctx):
+    id = ctx.author.id
+    if (checkId(str(id))):
+        result = checkinfo(id)
+        send_debug(f'{ctx.author.name} info')
+        await ctx.send(send_info(result))
+    else:
+        await ctx.send(phrases['user_unknown'])
+
+
 bot.run(settings['token']) # Обращаемся к словарю settings с ключом token, для получения токена
