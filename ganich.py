@@ -64,7 +64,7 @@ async def leave(ctx):
 @bot.command()
 async def ping(ctx):
     send_debug(f'{ctx.author.name}, ping')
-    await ctx.send(phrases['ping'], file=discord.File(r'd:/py/valya/img/ping.gif'))
+    await ctx.send(phrases['ping'], file=discord.File(r'img/ping.gif'))
 
 @bot.command()
 async def test(ctx):
